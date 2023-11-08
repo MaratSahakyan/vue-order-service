@@ -54,6 +54,7 @@
 <script>
 import { defineComponent } from "vue";
 import { RouterLink } from "vue-router";
+import { createUser } from "../providers/authProvider";
 
 export default defineComponent({
   name: "SignUpPage",
@@ -71,7 +72,16 @@ export default defineComponent({
   },
 
   methods: {
-    onSubmit() {},
+    onSubmit() {
+      if (this.password !== this.repeatPassword) {
+        this.password = "";
+        this.repeatPassword = "";
+        return;
+      }
+      createUser(this.username, this.password)
+        .then((res) => console.log("res", res))
+        .catch((error) => console.log("error", error));
+    },
   },
 });
 </script>
