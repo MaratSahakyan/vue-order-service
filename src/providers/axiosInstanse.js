@@ -67,7 +67,6 @@ axiosInstance.interceptors.response.use(
           error.config.headers.Authorization = `Bearer ${accessToken}`;
           return axiosInstance(error.config);
         } catch (refreshError) {
-          // Handle the refresh token error (e.g., logout the user)
           throw refreshError;
         }
       } else {

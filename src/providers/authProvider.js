@@ -7,7 +7,6 @@ import axiosInstance from "./axiosInstanse";
 
 const auth = reactive({
   user: null,
-  isAuthenticated: false,
 });
 
 const updateUserTokens = (data) => {
@@ -34,7 +33,7 @@ const login = async (username, password) => {
     });
 
     updateUserTokens(response.data);
-    // getUserData();
+    getUserData();
   } catch (error) {
     throw error;
   }
@@ -48,7 +47,7 @@ const createUser = async (username, password) => {
     });
 
     updateUserTokens(response.data);
-    // getUserData();
+    getUserData();
   } catch (error) {
     throw error;
   }
