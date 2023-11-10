@@ -1,10 +1,10 @@
 <template>
   <q-page class="flex flex-center">
-    <q-form @submit.prevent="onSubmit" class="container">
-      <h1 class="main-title">Manage Your Service</h1>
-      <div class="inputsContainer">
+    <div class="container">
+      <q-form @submit.prevent="onSubmit">
+        <h1 class="main-title">Manage Your Service</h1>
         <q-input
-          v-model="username"
+          v-model="submitData.username"
           label="Username"
           outlined
           class="inputClassName"
@@ -17,8 +17,9 @@
         />
 
         <q-input
-          v-model="password"
+          v-model="submitData.password"
           label="Password"
+          type="password"
           outlined
           class="inputClassName"
           :rules="[
@@ -29,8 +30,9 @@
         />
 
         <q-input
-          v-model="repeatPassword"
+          v-model="submitData.repeatPassword"
           label="Repeat Password"
+          type="password"
           outlined
           class="inputClassName"
           :rules="[
@@ -39,48 +41,43 @@
               'Please type your password, min 5 symbol.',
           ]"
         />
-      </div>
 
-      <div class="buttonsContainer">
-        <q-btn label="Sign-Up" type="submit" color="primary" />
-        <RouterLink to="signin"
-          ><q-btn label="Sign-In" color="primary" flat
-        /></RouterLink>
-      </div>
-    </q-form>
+        <q-btn label="Sign-Up" type="submit" class="bg-secondary text-white" />
+      </q-form>
+    </div>
   </q-page>
 </template>
 
 <script>
 import { defineComponent } from "vue";
-import { RouterLink } from "vue-router";
 import { createUser } from "../providers/authProvider";
 
 export default defineComponent({
   name: "SignUpPage",
 
-  components: {
-    RouterLink,
-  },
-
   data() {
     return {
-      username: "",
-      password: "",
-      repeatPassword: "",
+      submitData: {
+        username: "",
+        password: "",
+        repeatPassword: "",
+      },
     };
   },
 
   methods: {
-    onSubmit() {
-      if (this.password !== this.repeatPassword) {
-        this.password = "";
-        this.repeatPassword = "";
+    async onSubmit() {
+      if (this.submitData.password !== this.submitData.repeatPassword) {
+        this.submitData.password = "";
+        this.submitData.repeatPassword = "";
         return;
       }
-      createUser(this.username, this.password)
-        .then((res) => console.log("res", res))
-        .catch((error) => console.log("error", error));
+
+      try {
+        await createUser(this.submitData.username, this.submitData.password);
+      } catch (error) {
+        console.log("error", error);
+      }
     },
   },
 });
@@ -89,36 +86,20 @@ export default defineComponent({
 <style lang="scss" scoped>
 .container {
   width: 100%;
-  max-width: 600px;
   margin: 0 20px;
+  min-width: 500px;
 
-  .main-title {
+  h1 {
+    font-size: 28px;
     margin: 0;
-    font-size: 50px;
-
-    @media (max-width: 723px) {
-      margin: 0;
-      font-size: 35px;
-    }
+    line-height: normal;
+    margin-bottom: 20px;
   }
 
-  .inputsContainer {
-    display: flex;
-    flex-direction: column;
-    .inputClassName {
-      width: 100%;
-    }
-  }
-
-  .buttonsContainer {
+  form {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin: 0;
-
-    button {
-      width: 100%;
-    }
   }
 }
 </style>

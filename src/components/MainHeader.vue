@@ -1,33 +1,29 @@
 <template>
-  <div class="q-pa-md">
-    <q-layout
-      view="lHh lpr lFf"
-      container
-      style="height: 400px"
-      class="shadow-2 rounded-borders"
-    >
-      <q-header reveal elevated>
-        <q-toolbar>
-          <q-btn flat round dense icon="menu" class="q-mr-sm" />
-          <q-avatar>
-            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
-          </q-avatar>
+  <q-toolbar class="bg-secondary text-white shadow-2">
+    <q-toolbar-title>
+      <q-btn @click="goToHomePage" flat stretch label="Order Service"
+    /></q-toolbar-title>
 
-          <q-toolbar-title>Quasar Framework</q-toolbar-title>
+    <q-space />
 
-          <q-btn flat round dense icon="whatshot" />
-        </q-toolbar>
-      </q-header>
-    </q-layout>
-  </div>
+    <q-btn @click="goToSignIn" flat stretch label="Sign-In" />
+    <q-btn @click="goToSignUp" flat stretch label="Sign-Up" />
+  </q-toolbar>
 </template>
 
 <script>
-import { defineComponent } from "vue";
+import { ref } from "vue";
+import useRouter from "../hooks/useRouter";
 
-export default defineComponent({
-  name: "MainHeader",
-});
+export default {
+  setup() {
+    const { push } = useRouter();
+
+    return {
+      goToSignIn: () => push("/signin"),
+      goToSignUp: () => push("/signup"),
+      goToHomePage: () => push("/"),
+    };
+  },
+};
 </script>
-
-<style lang="scss" scoped></style>

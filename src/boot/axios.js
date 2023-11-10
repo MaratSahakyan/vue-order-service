@@ -5,14 +5,13 @@ import {
   setItemToLocalStorage,
   setItemToSessionStorage,
 } from "src/utils/storageTools";
+import { boot } from "quasar/wrappers";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:4000",
+  baseURL: "http://localhost:4004",
   timeout: 5000,
   headers: {
-    Authorization: getItemFromSessionStorage("accessToken")
-      ? `Bearer ${getItemFromSessionStorage("accessToken")}`
-      : "",
+    Authorization: `Bearer ${getItemFromSessionStorage("accessToken")}`,
     "Content-Type": "application/json",
     Accept: "application/json",
   },
@@ -78,4 +77,8 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-export default axiosInstance;
+export default boot(({ app }) => {
+  app.config.globalProperties.$axios = axiosInstance;
+});
+
+export { axiosInstance };

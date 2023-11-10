@@ -1,9 +1,9 @@
+import { axiosInstance } from "src/boot/axios";
 import {
   removeItemFromLocalStorage,
   removeItemFromSessionStorage,
 } from "src/utils/storageTools";
 import { reactive } from "vue";
-import axiosInstance from "./axiosInstanse";
 
 const auth = reactive({
   user: null,
@@ -11,7 +11,6 @@ const auth = reactive({
 
 const updateUserTokens = (data) => {
   const { accessToken, refreshToken } = data;
-  axiosInstance.defaults.headers.Authorization = `Bearer ${accessToken}`;
   setItemToSessionStorage("accessToken", accessToken);
   setItemToLocalStorage("refreshToken", refreshToken);
 };

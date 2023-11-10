@@ -12,7 +12,6 @@ const routes = [
   {
     path: "/signup",
     component: () => import("layouts/AuthLayout.vue"),
-    // beforeEnter: requireNoAuth,
     children: [{ path: "", component: () => import("pages/SignUpPage.vue") }],
   },
   {
