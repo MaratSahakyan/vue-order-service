@@ -1,11 +1,8 @@
 import axios from "axios";
 import useRouter from "src/hooks/useRouter";
-import {
-  getItemFromSessionStorage,
-  setItemToLocalStorage,
-  setItemToSessionStorage,
-} from "src/utils/storageTools";
+import { getItemFromSessionStorage } from "src/utils/storageTools";
 import { boot } from "quasar/wrappers";
+import { refreshAccessToken } from "src/providers/authProvider";
 
 const axiosInstance = axios.create({
   baseURL: "http://localhost:4004",
@@ -18,22 +15,6 @@ const axiosInstance = axios.create({
   responseType: "json",
   withCredentials: true,
 });
-
-const refreshAccessToken = async (refreshToken) => {
-  try {
-    const response = await axiosInstance.post("/auth/refresh", {
-      refreshToken,
-    });
-    const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
-      response.data;
-    setItemToSessionStorage("accessToken", newAccessToken);
-    setItemToLocalStorage("refreshToken", newRefreshToken);
-    return newAccessToken;
-  } catch (error) {
-    push("/login");
-    throw error;
-  }
-};
 
 axiosInstance.interceptors.request.use(
   async (config) => {
@@ -62,10 +43,10 @@ axiosInstance.interceptors.response.use(
       if (refreshToken) {
         try {
           const { accessToken } = await refreshAccessToken(refreshToken);
-
           error.config.headers.Authorization = `Bearer ${accessToken}`;
           return axiosInstance(error.config);
         } catch (refreshError) {
+          push("/login");
           throw refreshError;
         }
       } else {

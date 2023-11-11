@@ -1,29 +1,26 @@
 <template>
   <q-toolbar class="bg-secondary text-white shadow-2">
     <q-toolbar-title>
-      <q-btn @click="goToHomePage" flat stretch label="Order Service"
-    /></q-toolbar-title>
+      <RouterLink to="/" class="text-white">
+        <q-btn flat stretch label="Order Service" /></RouterLink
+    ></q-toolbar-title>
 
     <q-space />
 
-    <q-btn @click="goToSignIn" flat stretch label="Sign-In" />
-    <q-btn @click="goToSignUp" flat stretch label="Sign-Up" />
+    <RouterLink to="/signin" class="text-white"
+      ><q-btn flat stretch label="Sign-In"
+    /></RouterLink>
+    <RouterLink to="/signup" class="text-white"
+      ><q-btn flat stretch label="Sign-Up"
+    /></RouterLink>
   </q-toolbar>
 </template>
 
 <script>
-import { ref } from "vue";
-import useRouter from "../hooks/useRouter";
+import { defineComponent } from "vue";
+import { RouterLink } from "vue-router";
 
-export default {
-  setup() {
-    const { push } = useRouter();
-
-    return {
-      goToSignIn: () => push("/signin"),
-      goToSignUp: () => push("/signup"),
-      goToHomePage: () => push("/"),
-    };
-  },
-};
+export default defineComponent({
+  name: "MainHeader",
+});
 </script>

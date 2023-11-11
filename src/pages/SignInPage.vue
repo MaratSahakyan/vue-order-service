@@ -38,9 +38,18 @@
 <script>
 import { defineComponent } from "vue";
 import { login } from "../providers/authProvider";
+import useRouter from "../hooks/useRouter";
 
 export default defineComponent({
   name: "SignInPage",
+
+  setup() {
+    const router = useRouter();
+
+    return {
+      router,
+    };
+  },
 
   data() {
     return {
@@ -55,6 +64,7 @@ export default defineComponent({
     async onSubmit() {
       try {
         await login(this.submitData.username, this.submitData.password);
+        this.router.push("/dashboard");
       } catch (error) {
         console.log("error", error);
       }

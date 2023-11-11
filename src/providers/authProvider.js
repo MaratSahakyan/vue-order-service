@@ -1,5 +1,7 @@
 import { axiosInstance } from "src/boot/axios";
 import {
+  setItemToSessionStorage,
+  setItemToLocalStorage,
   removeItemFromLocalStorage,
   removeItemFromSessionStorage,
 } from "src/utils/storageTools";
@@ -17,8 +19,11 @@ const updateUserTokens = (data) => {
 
 const getUserData = async () => {
   try {
-    const response = await axiosInstance.get(`/users/my-data`);
-    auth.user = response.data.user;
+    const response = await axiosInstance.get(`/auth/my-data`);
+    console.log("response.data", response.data);
+    auth.user = response.data;
+    return response.data;
+    console.log("🚀 ~ file: authProvider.js:25 ~ getUserData ~ auth:", auth);
   } catch (error) {
     throw error;
   }
@@ -52,10 +57,22 @@ const createUser = async (username, password) => {
   }
 };
 
+const refreshAccessToken = async (refreshToken) => {
+  try {
+    const response = await axiosInstance.post("/auth/refresh", {
+      refreshToken,
+    });
+    updateUserTokens(response.data);
+    return newAccessToken;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const logout = () => {
   auth.user = null;
   removeItemFromLocalStorage("refreshToken");
   removeItemFromSessionStorage("accessToken");
 };
 
-export { auth, login, createUser, logout, getUserData };
+export { auth, login, createUser, logout, refreshAccessToken, getUserData };
