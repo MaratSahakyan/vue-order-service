@@ -6,6 +6,7 @@
       :makeEdit="makeEdit"
       :openDialog="openDialog"
       :deleteCustomer="deleteCustomer"
+      :paginationMeta="paginationMeta"
     />
     <CustomDialog :open="dialogOpen" @closeDialog="closeDialog">
       <template #dialogContent>
@@ -55,6 +56,7 @@ export default defineComponent({
     async getCustomers() {
       const { data } = await this.$axios.get("/customers");
       this.customersData = data.items;
+      this.paginationMeta = data.meta;
     },
 
     cleanCustomerData() {
@@ -120,6 +122,7 @@ export default defineComponent({
         username: "",
         dob: "",
       },
+      paginationMeta: {},
     };
   },
 });

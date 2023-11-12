@@ -27,6 +27,16 @@
         </q-item-section>
       </q-item>
     </q-list>
+    <q-pagination
+      v-model="paginationData.currentPage"
+      class="pagination"
+      :max="paginationData.totalPages"
+      direction-links
+      push
+      color="teal"
+      active-design="push"
+      active-color="orange"
+    />
   </div>
 </template>
 
@@ -34,7 +44,29 @@
 import useRouter from "../../hooks/useRouter";
 export default {
   name: "CustomersContent",
-  props: ["customersData", "makeEdit", "openDialog", "deleteCustomer"],
+  props: [
+    "customersData",
+    "makeEdit",
+    "openDialog",
+    "deleteCustomer",
+    "paginationMeta",
+  ],
+
+  created() {
+    console.log("paginationMeta", this.paginationMeta);
+  },
+
+  watch: {
+    paginationMeta(newVal) {
+      this.paginationData = newVal;
+    },
+  },
+
+  data() {
+    return {
+      paginationData: {},
+    };
+  },
 
   setup() {
     const router = useRouter();
@@ -76,5 +108,11 @@ export default {
     display: flex;
     gap: 10px;
   }
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
 }
 </style>

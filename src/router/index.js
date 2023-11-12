@@ -13,7 +13,7 @@ router.beforeEach((to, from, next) => {
 
   if (accessToken) {
     if (["/signin", "/signup", "/"].includes(to.path)) {
-      next("/dashboard");
+      next("/customers");
     } else {
       next();
     }
