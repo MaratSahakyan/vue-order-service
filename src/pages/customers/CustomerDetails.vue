@@ -22,7 +22,7 @@
     </q-tabs>
 
     <div class="header-container">
-      <h6>Orders</h6>
+      <h6>Orders / {{ customer.username }}</h6>
       <q-btn class="bg-cyan-8 text-white" @click="openDialog('create')">
         <q-icon name="fa-solid fa-list-check" />
         <div>Add Order</div>
@@ -77,7 +77,6 @@
           :onSubmit="dialogMode === 'create' ? createOrder : editOrder"
           :mode="dialogMode"
           :statusOptions="['Pending', 'Completed', 'Cancelled']"
-          :customerOptions="customers"
         />
       </template>
     </CustomDialog>
@@ -85,12 +84,12 @@
 </template>
 
 <script>
-import useRouter from "../hooks/useRouter";
-import CustomDialog from "../components/CustomDialog.vue";
-import CreateEditOrder from "../components/CreateEditOrder.vue";
-import { translateTimestamp } from "../utils/dateTools";
+import useRouter from "../../hooks/useRouter";
+import CustomDialog from "../../components/CustomDialog.vue";
+import CreateEditOrder from "../../components/CreateEditOrder.vue";
+import { translateTimestamp } from "../../utils/dateTools";
 export default {
-  name: "OrdersPage",
+  name: "CustomerDetails",
   components: { CustomDialog, CreateEditOrder },
 
   setup() {
@@ -127,28 +126,27 @@ export default {
       this.makeEdit(orderId);
     },
     async getOrdersByStatus() {
-      try {
-        const { data } = await this.$axios.get(
-          `orders/status?status=${this.tab}`
-        );
-
-        this.orders = data;
-      } catch (error) {
-        throw error;
+      if (this.router?.params?.id) {
+        try {
+          const { data } = await this.$axios.get(
+            `/orders/${this.router.params.id}/${this.tab}`
+          );
+          this.orders = data.items;
+        } catch (error) {
+          throw error;
+        }
       }
     },
-    async getCustomers() {
-      try {
-        const { data } = await this.$axios.get(`/customers`);
-
-        const filteredData = data.items.map(({ username, id }) => ({
-          username,
-          customerId: id,
-        }));
-
-        this.customers = filteredData;
-      } catch (error) {
-        throw error;
+    async getUserData() {
+      if (this.router?.params?.id) {
+        try {
+          const { data } = await this.$axios.get(
+            `/customers/${this.router.params.id}`
+          );
+          this.customer = data;
+        } catch (error) {
+          throw error;
+        }
       }
     },
 
@@ -188,6 +186,7 @@ export default {
       try {
         orderData.price = Number(orderData.price);
         orderData.quantity = Number(orderData.quantity);
+        orderData.customerId = this.customer.id;
         await this.$axios.post("/orders/create", orderData);
         this.tab = "Pending";
         this.getOrdersByStatus();
@@ -199,7 +198,7 @@ export default {
   },
 
   created() {
-    this.getCustomers();
+    this.getUserData();
     this.getOrdersByStatus();
   },
   watch: {
@@ -210,7 +209,7 @@ export default {
 
   data() {
     return {
-      customers: [],
+      customer: {},
       orders: [],
       tab: "Pending",
       dialogOpen: false,
@@ -220,7 +219,6 @@ export default {
         quantity: 1,
         price: 0,
         status: "Pending",
-        customerId: "",
       },
     };
   },

@@ -22,6 +22,7 @@
           type="password"
           outlined
           class="inputClassName"
+          aria-autocomplete="create-password"
           :rules="[
             (val) =>
               (val && val.length > 5) ||
@@ -35,6 +36,7 @@
           type="password"
           outlined
           class="inputClassName"
+          aria-autocomplete="repeat-current-password"
           :rules="[
             (val) =>
               (val && val.length > 5) ||
@@ -51,6 +53,7 @@
 <script>
 import { defineComponent } from "vue";
 import { createUser } from "../providers/authProvider";
+import useRouter from "../hooks/useRouter";
 
 export default defineComponent({
   name: "SignUpPage",
@@ -65,6 +68,13 @@ export default defineComponent({
     };
   },
 
+  setup() {
+    const router = useRouter();
+    return {
+      router,
+    };
+  },
+
   methods: {
     async onSubmit() {
       if (this.submitData.password !== this.submitData.repeatPassword) {
@@ -75,8 +85,9 @@ export default defineComponent({
 
       try {
         await createUser(this.submitData.username, this.submitData.password);
+        this.router.push("/customers");
       } catch (error) {
-        console.log("error", error);
+        throw error;
       }
     },
   },
@@ -85,9 +96,11 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .container {
-  width: 100%;
   margin: 0 20px;
-  min-width: 500px;
+  width: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   h1 {
     font-size: 28px;
@@ -100,6 +113,7 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
     gap: 10px;
+    width: 100%;
   }
 }
 </style>

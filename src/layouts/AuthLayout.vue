@@ -1,13 +1,9 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <MainHeader />
-    <div class="container">
-      <div>
-        <q-page-container>
-          <router-view />
-        </q-page-container>
-      </div>
-    </div>
+    <q-page-container>
+      <router-view />
+    </q-page-container>
   </q-layout>
 </template>
 
@@ -20,11 +16,3 @@ export default defineComponent({
   components: { MainHeader },
 });
 </script>
-
-<style lang="scss" scoped>
-.container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-</style>

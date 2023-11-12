@@ -22,6 +22,7 @@
           type="password"
           outlined
           class="inputClassName"
+          aria-autocomplete="current-password"
           :rules="[
             (val) =>
               (val && val.length > 5) ||
@@ -64,9 +65,9 @@ export default defineComponent({
     async onSubmit() {
       try {
         await login(this.submitData.username, this.submitData.password);
-        this.router.push("/dashboard");
+        this.router.push("/customers");
       } catch (error) {
-        console.log("error", error);
+        throw error;
       }
     },
   },
@@ -75,9 +76,11 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .container {
-  width: 100%;
   margin: 0 20px;
-  min-width: 500px;
+  width: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   h1 {
     font-size: 28px;
@@ -90,6 +93,7 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
     gap: 10px;
+    width: 100%;
   }
 }
 </style>

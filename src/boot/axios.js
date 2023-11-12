@@ -1,5 +1,5 @@
 import axios from "axios";
-import useRouter from "src/hooks/useRouter";
+import useRouter from "../hooks/useRouter";
 import { getItemFromSessionStorage } from "src/utils/storageTools";
 import { boot } from "quasar/wrappers";
 import { refreshAccessToken } from "src/providers/authProvider";
@@ -38,7 +38,7 @@ axiosInstance.interceptors.response.use(
   },
   async (error) => {
     if (error.response && error.response.status === 401) {
-      const { push } = useRouter();
+      // const { push } = useRouter();
       const refreshToken = getItemFromSessionStorage("refreshToken");
       if (refreshToken) {
         try {
@@ -46,11 +46,11 @@ axiosInstance.interceptors.response.use(
           error.config.headers.Authorization = `Bearer ${accessToken}`;
           return axiosInstance(error.config);
         } catch (refreshError) {
-          push("/login");
+          // push("/login");
           throw refreshError;
         }
       } else {
-        push("/login");
+        // push("/login");
         throw new Error("Refresh token not found");
       }
     }

@@ -5,11 +5,6 @@ import {
   removeItemFromLocalStorage,
   removeItemFromSessionStorage,
 } from "src/utils/storageTools";
-import { reactive } from "vue";
-
-const auth = reactive({
-  user: null,
-});
 
 const updateUserTokens = (data) => {
   const { accessToken, refreshToken } = data;
@@ -20,10 +15,7 @@ const updateUserTokens = (data) => {
 const getUserData = async () => {
   try {
     const response = await axiosInstance.get(`/auth/my-data`);
-    console.log("response.data", response.data);
-    auth.user = response.data;
     return response.data;
-    console.log("🚀 ~ file: authProvider.js:25 ~ getUserData ~ auth:", auth);
   } catch (error) {
     throw error;
   }
@@ -75,4 +67,4 @@ const logout = () => {
   removeItemFromSessionStorage("accessToken");
 };
 
-export { auth, login, createUser, logout, refreshAccessToken, getUserData };
+export { login, createUser, logout, refreshAccessToken, getUserData };

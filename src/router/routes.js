@@ -2,7 +2,7 @@ const routes = [
   {
     path: "/",
     meta: { requiresAuth: false },
-    component: () => import("layouts/MainLayout1.vue"),
+    component: () => import("layouts/AuthLayout.vue"),
     children: [{ path: "", component: () => import("pages/IndexPage.vue") }],
   },
   {
@@ -20,24 +20,20 @@ const routes = [
   {
     path: "/customers",
     meta: { requiresAuth: true },
-    component: () => import("layouts/MainLayout.vue"),
+    component: () => import("layouts/DashBoardLayout.vue"),
     children: [
-      { path: "", component: () => import("pages/CustomersPage.vue") },
+      { path: "", component: () => import("pages/customers/index.vue") },
+      {
+        path: "customer/:id",
+        component: () => import("pages/customers/CustomerDetails.vue"),
+      },
     ],
   },
   {
     path: "/orders",
     meta: { requiresAuth: true },
-    component: () => import("layouts/MainLayout.vue"),
+    component: () => import("layouts/DashBoardLayout.vue"),
     children: [{ path: "", component: () => import("pages/OrdersPage.vue") }],
-  },
-  {
-    path: "/dashboard",
-    meta: { requiresAuth: true },
-    component: () => import("layouts/MainLayout.vue"),
-    children: [
-      { path: "", component: () => import("pages/DashBoardPage.vue") },
-    ],
   },
   {
     path: "/:catchAll(.*)*",
