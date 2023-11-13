@@ -1,5 +1,7 @@
-import { refreshAccessToken } from "src/providers/authProvider";
-import { getItemFromSessionStorage } from "src/utils/storageTools";
+import {
+  getItemFromLocalStorage,
+  getItemFromSessionStorage,
+} from "src/utils/storageTools";
 import { createRouter, createWebHistory } from "vue-router";
 import routes from "./routes";
 
@@ -10,19 +12,16 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const accessToken = getItemFromSessionStorage("accessToken");
+  const refreshToken = getItemFromLocalStorage("refreshToken");
 
-  if (accessToken) {
-    if (["/signin", "/signup", "/"].includes(to.path)) {
-      next("/dashboard");
-    } else {
-      next();
-    }
+  const publicRoutes = ["/", "/signin", "/signup"];
+
+  if (!refreshToken && !publicRoutes.includes(to.path)) {
+    next("/");
+  } else if (!accessToken && !publicRoutes.includes(to.path)) {
+    next("/");
   } else {
-    if (to.meta.requiresAuth) {
-      next("/signin");
-    } else {
-      next();
-    }
+    next();
   }
 });
 
