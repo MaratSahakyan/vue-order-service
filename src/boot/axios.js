@@ -3,6 +3,7 @@ import {
   getItemFromLocalStorage,
   getItemFromSessionStorage,
   removeItemFromLocalStorage,
+  removeItemFromSessionStorage,
 } from "src/utils/storageTools";
 import { boot } from "quasar/wrappers";
 import { refreshAccessToken } from "src/providers/authProvider";
@@ -66,6 +67,7 @@ axiosInstance.interceptors.response.use(
             }
           } catch (refreshError) {
             isRefreshing = false;
+            removeItemFromSessionStorage("accessToken");
             removeItemFromLocalStorage("refreshToken");
             throw refreshError;
           }
