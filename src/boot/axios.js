@@ -1,6 +1,10 @@
 import axios from "axios";
-import useRouter from "../hooks/useRouter";
-import { getItemFromSessionStorage } from "src/utils/storageTools";
+import {
+  getItemFromLocalStorage,
+  getItemFromSessionStorage,
+  removeItemFromLocalStorage,
+  removeItemFromSessionStorage,
+} from "src/utils/storageTools";
 import { boot } from "quasar/wrappers";
 import { refreshAccessToken } from "src/providers/authProvider";
 
@@ -32,26 +36,49 @@ axiosInstance.interceptors.request.use(
   }
 );
 
+let isRefreshing = false;
+let failedQueue = [];
+
 axiosInstance.interceptors.response.use(
   (response) => {
     return response;
   },
   async (error) => {
     if (error.response && error.response.status === 401) {
-      // const { push } = useRouter();
-      const refreshToken = getItemFromSessionStorage("refreshToken");
-      if (refreshToken) {
-        try {
-          const { accessToken } = await refreshAccessToken(refreshToken);
-          error.config.headers.Authorization = `Bearer ${accessToken}`;
-          return axiosInstance(error.config);
-        } catch (refreshError) {
-          // push("/login");
-          throw refreshError;
+      const originalRequest = error.config;
+
+      if (!isRefreshing) {
+        isRefreshing = true;
+
+        const refreshToken = getItemFromLocalStorage("refreshToken");
+
+        if (refreshToken) {
+          try {
+            const { accessToken } = await refreshAccessToken(refreshToken);
+            originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+
+            try {
+              const response = await axiosInstance.request(originalRequest);
+              isRefreshing = false;
+              return response;
+            } catch (err) {
+              isRefreshing = false;
+              throw err;
+            }
+          } catch (refreshError) {
+            isRefreshing = false;
+            removeItemFromSessionStorage("accessToken");
+            removeItemFromLocalStorage("refreshToken");
+            throw refreshError;
+          }
+        } else {
+          isRefreshing = false;
+          throw new Error("Refresh token not found");
         }
       } else {
-        // push("/login");
-        throw new Error("Refresh token not found");
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        });
       }
     }
     return Promise.reject(error);
