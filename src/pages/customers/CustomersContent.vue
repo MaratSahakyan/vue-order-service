@@ -28,11 +28,11 @@
       </q-item>
     </q-list>
     <q-pagination
-      v-model="paginationData.currentPage"
-      class="pagination"
+      v-model="current"
       :max="paginationData.totalPages"
       direction-links
-      push
+      class="pagination"
+      outline
       color="teal"
       active-design="push"
       active-color="orange"
@@ -41,6 +41,7 @@
 </template>
 
 <script>
+import { ref, watch } from "vue";
 import useRouter from "../../hooks/useRouter";
 export default {
   name: "CustomersContent",
@@ -50,11 +51,8 @@ export default {
     "openDialog",
     "deleteCustomer",
     "paginationMeta",
+    "getCustomers",
   ],
-
-  created() {
-    console.log("paginationMeta", this.paginationMeta);
-  },
 
   watch: {
     paginationMeta(newVal) {
@@ -68,11 +66,28 @@ export default {
     };
   },
 
-  setup() {
+  setup(props) {
     const router = useRouter();
+    const current = ref(props.paginationMeta.currentPage);
+
+    watch(
+      () => props.paginationMeta.currentPage,
+      (newPage, oldPage) => {
+        if (newPage !== oldPage) {
+          current.value = newPage;
+
+          props.getCustomers(newPage);
+        }
+      }
+    );
+
+    watch(current, (newValue) => {
+      props.getCustomers(newValue);
+    });
 
     return {
       router,
+      current,
     };
   },
   methods: {
@@ -113,6 +128,6 @@ export default {
 .pagination {
   display: flex;
   justify-content: center;
-  margin-top: 10px;
+  margin: 10px 0;
 }
 </style>

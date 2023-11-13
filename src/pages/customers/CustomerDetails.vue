@@ -69,6 +69,16 @@
         </q-item-section>
       </q-item>
     </q-list>
+    <q-pagination
+      v-model="current"
+      :max="paginationMeta.totalPages"
+      direction-links
+      class="pagination"
+      outline
+      color="teal"
+      active-design="push"
+      active-color="orange"
+    />
     <CustomDialog :open="dialogOpen" @closeDialog="closeDialog">
       <template #dialogContent>
         <CreateEditOrder
@@ -88,10 +98,10 @@ import useRouter from "../../hooks/useRouter";
 import CustomDialog from "../../components/CustomDialog.vue";
 import CreateEditOrder from "../../components/CreateEditOrder.vue";
 import { translateTimestamp } from "../../utils/dateTools";
+import { ref } from "vue";
 export default {
   name: "CustomerDetails",
   components: { CustomDialog, CreateEditOrder },
-
   setup() {
     const router = useRouter();
 
@@ -125,13 +135,17 @@ export default {
       this.openDialog("edit");
       this.makeEdit(orderId);
     },
-    async getOrdersByStatus() {
+    async getOrdersByStatus(page) {
       if (this.router?.params?.id) {
         try {
           const { data } = await this.$axios.get(
-            `/orders/${this.router.params.id}/${this.tab}`
+            `/orders/${this.router.params.id}/${this.tab}?page=${
+              page || this.current
+            }`
           );
           this.orders = data.items;
+          this.paginationMeta = data.meta;
+          this.current = data.meta.currentPage;
         } catch (error) {
           throw error;
         }
@@ -205,6 +219,9 @@ export default {
     tab() {
       this.getOrdersByStatus();
     },
+    current(newVal) {
+      this.getOrdersByStatus(newVal);
+    },
   },
 
   data() {
@@ -214,6 +231,8 @@ export default {
       tab: "Pending",
       dialogOpen: false,
       dialogMode: "create",
+      paginationMeta: {},
+      current: 1,
       orderData: {
         name: "",
         quantity: 1,
@@ -262,5 +281,11 @@ export default {
   align-items: center;
   width: 100%;
   padding: 0 10px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
 }
 </style>

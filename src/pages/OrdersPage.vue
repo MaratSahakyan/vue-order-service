@@ -69,6 +69,16 @@
         </q-item-section>
       </q-item>
     </q-list>
+    <q-pagination
+      v-model="current"
+      :max="paginationMeta.totalPages"
+      direction-links
+      class="pagination"
+      outline
+      color="teal"
+      active-design="push"
+      active-color="orange"
+    />
     <CustomDialog :open="dialogOpen" @closeDialog="closeDialog">
       <template #dialogContent>
         <CreateEditOrder
@@ -126,13 +136,14 @@ export default {
       this.openDialog("edit");
       this.makeEdit(orderId);
     },
-    async getOrdersByStatus() {
+    async getOrdersByStatus(page) {
       try {
         const { data } = await this.$axios.get(
-          `orders/status?status=${this.tab}`
+          `orders/status?status=${this.tab}&page=${page || this.current}`
         );
-
-        this.orders = data;
+        this.orders = data.items;
+        this.paginationMeta = data.meta;
+        this.current = data.meta.currentPage;
       } catch (error) {
         throw error;
       }
@@ -202,9 +213,13 @@ export default {
     this.getCustomers();
     this.getOrdersByStatus();
   },
+
   watch: {
     tab() {
       this.getOrdersByStatus();
+    },
+    current(newVal) {
+      this.getOrdersByStatus(newVal);
     },
   },
 
@@ -215,6 +230,8 @@ export default {
       tab: "Pending",
       dialogOpen: false,
       dialogMode: "create",
+      paginationMeta: {},
+      current: 1,
       orderData: {
         name: "",
         quantity: 1,
@@ -264,5 +281,10 @@ export default {
   align-items: center;
   width: 100%;
   padding: 0 10px;
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
 }
 </style>

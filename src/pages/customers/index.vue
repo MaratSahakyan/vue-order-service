@@ -7,6 +7,7 @@
       :openDialog="openDialog"
       :deleteCustomer="deleteCustomer"
       :paginationMeta="paginationMeta"
+      :getCustomers="getCustomers"
     />
     <CustomDialog :open="dialogOpen" @closeDialog="closeDialog">
       <template #dialogContent>
@@ -53,8 +54,8 @@ export default defineComponent({
       this.cleanCustomerData();
     },
 
-    async getCustomers() {
-      const { data } = await this.$axios.get("/customers");
+    async getCustomers(page) {
+      const { data } = await this.$axios.get(`/customers?page=${page || 1}`);
       this.customersData = data.items;
       this.paginationMeta = data.meta;
     },
