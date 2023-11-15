@@ -71,6 +71,7 @@
     </q-list>
     <q-pagination
       v-model="current"
+      v-if="paginationMeta.totalPages"
       :max="paginationMeta.totalPages"
       direction-links
       class="pagination"
